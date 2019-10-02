@@ -3,21 +3,10 @@ library(readxl)
 library(tidyverse)
 library(ggplot2)
 library(pander)
+library(reshape2)
+library(plyr)
 
 listing <- read.csv("/Users/Jeffrey/Desktop/Math/DATS 6101/Project 1/listings.csv")
-
-#crime <- read.csv("/Users/Jeffrey/Desktop/Math/DATS 6101/Project 1/crime.csv")
-#crime <- subset(crime, OFFENSE == "THEFT F/AUTO" | OFFENSE == "THEFT/OTHER")
-#colnames(crime)[colnames(crime)=="CENSUS_TRACT"] <- "tract"
-
-#zip_crosswalk <- read_excel("/Users/Jeffrey/Desktop/Math/DATS 6101/Project 1/zip_crosswalk.xlsx")
-#zip_crosswalk <- 
-  #zip_crosswalk %>%
-  #filter(zip > 20000 & zip < 20456) %>%
-  #select("tract", "zip") %>%
-  #mutate(tract = as.integer(str_sub(tract, start = -6)))
-
-#rime <- join(crime, zip_crosswalk, by = "tract", type = "left", match = "all")
 
 outlierKD <- function(dt, var) { 
   var_name <- eval(substitute(var),eval(dt))
@@ -81,6 +70,20 @@ room_to_reviews <- ggplot(listing, aes(x = as.factor(room_type), y = number_of_r
        y = "Number of Reviews",
        color = "Room Type") 
 print(room_to_reviews + ggtitle("Boxplot of Number of Reviews by Room Type"))
+
+neighborhood_subset <- 
+  listing %>%
+  select(id, neighbourhood) %>%
+  separate(neighbourhood, into = c("N1", "N2", "N3"), sep = ",") 
+neighborhood_subset$bins <- NULL
+neighborhood_subset <- na.omit(neighborhood_subset) 
+neighborhood_subset <- melt(neighborhood_subset, id.vars = "id")
+neighborhood_subset$variable <- NULL
+
+price <- as.data.frame(cbind(listing$id, listing$price))
+names(price) <- c("id", "price")
+neighborhood_subset <- join(neighborhood_subset, price, by = id, type = "left", match = "all")
+
 
 
 ### ANOVA and Tukey Tests
