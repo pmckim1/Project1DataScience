@@ -4,6 +4,8 @@ require(tidyverse) # Package used for data manipulation
 require(ggplot2) # Package for data visualization
 require(pander) # Package to make 
 require(reshape2) # Additional package for data manipulation
+require(dplyr) # Additional package for data manipulation
+require(plyr) # Additional package for data manipulation
 
 # Read in AirBnB listing dataset (might need to change file path/working directory)
 listing <- read.csv("listings.csv") 
@@ -108,7 +110,9 @@ freq_table <-
   count() %>%
   arrange(-n)
 
-neigh_bar <- ggplot(subset(freq_table, n > quantile(freq_table$n, 0.85)), aes(x = neighborhood, y = n)) +
+top_15 <- subset(freq_table, n > quantile(freq_table$n, 0.85))
+
+neigh_bar <- ggplot(top_15, aes(x = neighborhood, y = n)) +
   geom_bar(aes(fill=neighborhood), stat="identity") + 
   theme_bw() + 
   labs(x = "Neighborhood",
@@ -133,13 +137,42 @@ neigh_bar <- ggplot(subset(freq_table, n > quantile(freq_table$n, 0.85)), aes(x 
 print(neigh_bar + ggtitle("Top 15 Most Popular AirBnB Neighborhoods")) # Print bar chart
 
 # Scatterplot of mean price by neighborhood
+price_table <- na.omit(neighborhood)
 price_table <-
-  as.factor(neighborhood$neighborhood)
-  group_by(neighborhood$neighborhood) %>%
+  price_table %>%
+  group_by(neighborhood) %>%
   mutate(mean_price = mean(price, na.rm=T))
 
+price_table <- match_df(price_table, top_15, on = "neighborhood")
 
+price_to_neigh <- ggplot(price_table, aes(x = neighborhood, y = mean_price)) +
+  geom_point(aes(color = neighborhood)) +
+  theme_bw() + 
+  labs(x = "Neighborhood",
+       y = "Mean Price",
+       color = "Neighborhood") + 
+  scale_x_discrete(labels = abbreviate)
+print(price_to_neigh + ggtitle("Average Price of Top 15 Most Popular Neighborhoods"))
 
+# Boxplot of price by neighborhood
+price_to_neigh_box <- ggplot(price_table, aes(x = neighborhood, y = price, color = neighborhood)) + 
+  geom_boxplot() + 
+  theme_bw() +
+  labs(x = "Neighborhood",
+       y = "Price",
+       color = "Neighborhood") +
+  scale_x_discrete(labels = abbreviate)
+print(price_to_neigh_box + ggtitle("Boxplot of Price by Top 15 Most Popular Neighborhoods"))
+
+# One-way ANOVA test to see if mean prices are different among neighborhoods
+# Conclusion: Statistically significant, reject the null hypothesis
+anova_price_neigh <- aov(price ~ as.factor(neighborhood), data = price_table)
+pander(anova_price_neigh)
+
+# Tukey HSD test to see which neighborhoods are pairwise different
+# Lots of stuff
+tukey_price_neigh <- TukeyHSD(anova_price_neigh)
+tukey_price_neigh
 
 # Question 5
 # Bin the number of reviews by 25 review bins
