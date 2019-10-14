@@ -1,0 +1,44 @@
+---
+title: "DataSc_Project"
+author: "Pancea Motawi"
+date: "10/7/2019"
+output: html_document
+---
+
+
+
+## Are room types independent of neighborhoods?
+
+```{r, echo=FALSE, include=TRUE}
+data<- read.csv(file="Aibnb_listings.csv", header = TRUE)
+str(data)
+table <- table(data$neighbourhood, data$room_type)
+table
+chi.test=chisq.test(table)
+chi.test
+pchisq(799.48, 76, lower.tail=F)
+```
+
+
+## Does the price of an Airbnb have a correlation with the number of reviews?
+
+```{r, echo=FALSE, include=TRUE}
+cor(data$number_of_reviews, data$price, method = c("pearson"))
+plot(data$number_of_reviews, data$price, main="Airbnb Prices VS. Number of Reviews Scatterplot", xlab="Number of Reviews", ylab="Price ",col = "blue", pch=19)
+dataa<- subset(data)
+outliers <- boxplot(dataa$price, plot=FALSE)$out
+dataa <- dataa[-which(dataa$price %in% outliers),]
+dataa$number_of_reviews [dataa$number_of_reviews<=150]<- "0 - 150"
+dataa$number_of_reviews [dataa$number_of_reviews>=151 & dataa$number_of_reviews<=300]<- "151 - 300"
+dataa$number_of_reviews [dataa$number_of_reviews>=301 & dataa$number_of_reviews<=450]<- "301 - 450"
+dataa$number_of_reviews [dataa$number_of_reviews>=451 & dataa$number_of_reviews<=600]<- "451 - 600"
+dataa$number_of_reviews [dataa$number_of_reviews>=601 & dataa$number_of_reviews<=750]<- "601 - 750"
+boxplot(price ~ number_of_reviews, data=dataa, main="Boxplot of Airbnb Prices by Number of Reviews", col=c("green", "blue", "red","yellow", "purple") )
+anova = aov(price~number_of_reviews, data=dataa)
+summary(anova)
+smaller375<- subset(data, number_of_reviews <= 375)
+greate375r<- subset(data, number_of_reviews >= 376)
+res<- t.test(smaller$price, greater$price)
+res
+```
+
