@@ -263,11 +263,12 @@ listing <-
   mutate(mean_price_bins = mean(price, na.rm=T)) # Take mean price by review bin
 
 # Scatterplot of average price (by bin) vs. number of reviews
-price_to_reviews <- ggplot(listing, aes(x = as.factor(bins), y = mean_price_bins)) + 
+price_to_reviews <- ggplot(listing, aes(x = as.factor(bins), y = mean_price_bins, color = mean_price_bins)) + 
   geom_point() +
   theme_bw() +
   labs(x = "Number of Reviews",
-       y = "Mean Price (by bin)") + 
+       y = "Mean Price (by bin)",
+       color = "Price") + 
   theme(axis.text.x = element_text(size = 7)) 
 print(price_to_reviews + ggtitle("Mean Price (by bin) vs. Number of Reviews")) # Print scatterplot with title
 ```

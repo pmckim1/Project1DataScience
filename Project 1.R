@@ -11,10 +11,11 @@ require(dplyr)
 listing <- read.csv("listings.csv") 
 
 # Function to remove outliers written by Dr. Lo
-outlierKD <- function(dt, var) { 
+outlierKD <- function(dt, var, rmv=NULL) { 
   var_name <- eval(substitute(var),eval(dt))
   na1 <- sum(is.na(var_name))
   m1 <- mean(var_name, na.rm = T)
+  sd1 <- sd(var_name,na.rm = T)
   par(mfrow=c(2, 2), oma=c(0,0,3,0))
   boxplot(var_name, main="With outliers")
   hist(var_name, main="With outliers", xlab=NA, ylab=NA)
@@ -31,7 +32,13 @@ outlierKD <- function(dt, var) {
   m2 <- mean(var_name, na.rm = T)
   cat("Mean without removing outliers:", round(m1, 2), "n")
   cat("Mean if we remove outliers:", round(m2, 2), "n")
-  response <- readline(prompt="Do you want to remove outliers and to replace with NA? [yes/no]: ")
+  #
+  if(is.null(rmv)) { 
+    response <- readline(prompt="Do you want to remove outliers and to replace with NA? [yes/no]: ") 
+  } else {
+    if (rmv=='y'|rmv=='yes'|rmv=='Y'|rmv=='Yes'|rmv=='YES'|rmv==TRUE ) { response = 'y' } else { response = 'n' }
+  }
+  #
   if(response == "y" | response == "yes"){
     dt[as.character(substitute(var))] <- invisible(var_name)
     assign(as.character(as.list(match.call())$dt), dt, envir = .GlobalEnv)
@@ -45,8 +52,8 @@ outlierKD <- function(dt, var) {
 
 # Use function to remove outliers from "listing" dataset
 # Enter Y when prompted in the console
-outlierKD(listing, price)
-outlierKD(listing, number_of_reviews)
+outlierKD(listing, price, "y")
+outlierKD(listing, number_of_reviews, "y")
 
 # Question 1
 # Plot boxplot of number of reviews by room type
