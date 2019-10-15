@@ -13,10 +13,8 @@ output: html_document
 data<- read.csv(file="Aibnb_listings.csv", header = TRUE)
 str(data)
 table <- table(data$neighbourhood, data$room_type)
-table
 chi.test=chisq.test(table)
 chi.test
-pchisq(799.48, 76, lower.tail=F)
 ```
 
 
@@ -36,9 +34,13 @@ dataa$number_of_reviews [dataa$number_of_reviews>=601 & dataa$number_of_reviews<
 boxplot(price ~ number_of_reviews, data=dataa, main="Boxplot of Airbnb Prices by Number of Reviews", col=c("green", "blue", "red","yellow", "purple") )
 anova = aov(price~number_of_reviews, data=dataa)
 summary(anova)
+tukey <- TukeyHSD(anova)
+tukey
 smaller375<- subset(data, number_of_reviews <= 375)
-greate375r<- subset(data, number_of_reviews >= 376)
-res<- t.test(smaller$price, greater$price)
+greater375<- subset(data, number_of_reviews >= 376)
+res<- t.test(smaller375$price, greater375$price)
 res
+
 ```
+
 
