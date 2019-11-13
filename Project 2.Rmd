@@ -1,0 +1,19 @@
+---
+title: "Project 2"
+author: "Jeffrey Jou"
+date: "November 26, 2019"
+output: 
+  html_document: 
+    code_folding: hide
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = F, 
+                      message = F, 
+                      echo = F, 
+                      comment = "")
+```
+
