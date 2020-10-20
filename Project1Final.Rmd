@@ -398,7 +398,7 @@ pander(res)
 
 ## 3.5 Are room types independent of neighborhoods?
 
-Now switching our attention to our categorical variables, we sought to test whether neighborhoods were independent of room type. Based on our Pearson's Chi-squared test of independence, we found the statistically significant p-value of 2.2e-16. Therefore, we reject the null hypothesis that there is a relationship between neighborhood and room type and determine that they are independent variables. 
+Now switching our attention to our categorical variables, we sought to test whether neighborhoods were independent of room type. Based on our Pearson's Chi-squared test of independence, we found the statistically significant p-value of 2.2e-16. Therefore, we reject the null hypothesis that there is a relationship between neighborhood and room type and determine that they are not independent variables. 
 
 ```{r, echo=FALSE, include=TRUE, warning=F}
 #data<- read.csv(file="Aibnb_listings.csv", header = TRUE)
